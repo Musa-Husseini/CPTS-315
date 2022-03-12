@@ -70,7 +70,7 @@ def computeSimilarity(table):
 
     similarity_scores = np.zeros((table.shape[1], table.shape[1]))
 
-    combos = list(combinations([i for i in range(50)], 2))
+    combos = list(combinations([i for i in range(table.shape[1])], 2))
 
     counter = 0
 
