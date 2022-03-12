@@ -1,12 +1,9 @@
-from cmath import sqrt
-import profile
 import numpy as np
 from itertools import combinations, count
 from numpy import linalg
 import pandas as pd
 import time
-from sklearn.neighbors import NearestNeighbors
-from sqlalchemy import true
+
 
 
 def main():
