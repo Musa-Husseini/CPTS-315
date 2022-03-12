@@ -1,14 +1,22 @@
+from cmath import sqrt
+import profile
 import numpy as np
-from scipy.sparse import csr_matrix
-from itertools import combinations
+from itertools import combinations, count
 from numpy import linalg
+import pandas as pd
+import time
+from sklearn.neighbors import NearestNeighbors
+from sqlalchemy import true
+
 
 def main():
+
+    #Getting centered cosine
     data = parser()
     table = createTable(data)
     centeredTable = centeredCosine(table)
     similarity = computeSimilarity(centeredTable)
-    print(table)
+    printToFile(similarity)
 
 def parser():
     with open("ratings.csv", "r") as file:
@@ -38,7 +46,7 @@ def createTable(data):
     colCount = len(movieSet)
 
     table = [ [ 0.0 for i in range(colCount) ] for j in range(rowCount) ]
-    
+
     for row in range(len(table)):
         for col in range(len(table[row])):
             curUserList = int (userList[row])
@@ -49,52 +57,50 @@ def createTable(data):
     return table
 
 
-def movieParser(data):
-    movie_ids = []
-    for row in data:
-        line = row.split(",")
-        movie_ids.append(line[1])
-
-    return set(movie_ids)
 
 def centeredCosine(table):
     return np.apply_along_axis(rowMean, 1, table)
 
 def rowMean(row):
     mean = row.mean()
+    #mean = np.nanmean(row)
     return np.subtract(row, mean)
 
 def computeSimilarity(table):
 
     similarity_scores = np.zeros((table.shape[1], table.shape[1]))
 
-    # combos = list(combinations([i for i in range(table.shape[1])], 2))
+    combos = list(combinations([i for i in range(50)], 2))
 
-    # for pair in combos:
-
-    #     list1 = table[:,pair[0]]
-    #     list2 = table[:,pair[1]]
-    #     similarity_scores[pair] = list1.dot(list2)/ (np.linalg.norm(list1) * np.linalg.norm(list2))
-
-    # return similarity_scores
+    counter = 0
 
 
-
-    #similarity_scores = {}
-
-
-    # testing for only the first 50 movies
-    combos = combinations([i for i in range(50)], 2)
-
-
+    startTime = time.time()
     for pair in combos:
-
+        print(counter)
+        counter += 1
         vector_1 = table[:,pair[0]]
         vector_2 = table[:,pair[1]]
 
-        similarity_scores[pair] = np.dot(vector_1, vector_2)/(linalg.norm(vector_1)*linalg.norm(vector_2))
-    
-    return similarity_scores
+        similarity_scores[pair]  = np.dot(vector_1, vector_2)/(linalg.norm(vector_1)*linalg.norm(vector_2))
+        
+    print("---- %s seconds ----" % (time.time() - startTime))
+
+    recommended = {}
+    user = 0
+    for row in similarity_scores:
+        recommended[user] = tuple(sorted(row, reverse=True)[:5])
+        user+=1
+
+    return recommended
+
+
+
+
+def printToFile(data):
+     f = open("output.txt", "w")
+     for key, value in data.items():
+         f.write("User: %s, Movies: %s\n" % (key, value))
 
 
 if __name__ == "__main__":
