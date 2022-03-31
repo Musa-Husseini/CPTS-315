@@ -1,7 +1,5 @@
-from tracemalloc import stop
 import numpy as np
 import pandas as pd
-from pkg_resources import VersionConflict
 
 def main():
     trainlabels = read_data("trainlabels.txt")
@@ -10,9 +8,11 @@ def main():
     testdata = read_data("testdata.txt")
     stoplist = read_data("stoplist.txt")
     vocab = vocabulary(traindata, stoplist)
-    feature = features(traindata, vocab)
-    print(feature)
-    classifier(feature, trainlabels, 20)
+    trainfeature = features(traindata, vocab)
+    testfeature = features(testdata, vocab)
+    weight, accuracy, sumi = classifier(trainfeature, trainlabels, 20)
+    print("Training Accuracy: ", accuracy)
+
 
 def read_data(filename):
     with open(filename, "r") as text_file:
@@ -41,12 +41,42 @@ def features(data, vocab):
 def classifier(features, trainlabels, iterations):
 
     w = [0]  * len(features[0])
-
+    ans = {}
+    correctSum = 0
+    print(features[0][0])
     for i in range(iterations):
-            correct = 0
-            incorrect = 0
 
-    pass
+        correct = 0
+        incorrect = 0
+        sumi = predictWeights(w, features[i]) + correctSum
+        if int(trainlabels[i]) == 1:
+            correct = 1
+        else:
+            correct = -1
+
+        for j in range(len(features)):
+            if  correct * sumi <= 0:
+                w = updateWeights(w, features[j], correct)
+                incorrect += 1
+                sumi += correct
+            else:
+                correct += 1
+        ans[i] = {"Correct" : correct, "Incorrect" : incorrect, "Accuracy" : correct/(correct+incorrect)}
+    return w, ans, sumi
+
+
+def predictWeights(weight, feature):
+    vsum = 0
+    n = len(feature)
+    for i in range(n):
+        vsum+=feature[i]*weight[i]
+    return vsum
+
+def updateWeights(weight, feature, correct):
+    n = len(feature)
+    for i in range(n):
+        weight[i] += correct * feature[i]
+    return weight
 
 if __name__ == '__main__':
     main()
