@@ -1,4 +1,3 @@
-from random import shuffle
 import numpy as np
 import pandas as pd
 
@@ -10,6 +9,7 @@ def main():
     stoplist = read_data("stoplist.txt")
     ocrtest = read_data("ocr_test.txt")
     ocrtrain = read_data("ocr_train.txt")
+
 
 
     vocab = vocabulary(traindata, stoplist)
@@ -64,7 +64,6 @@ def perceptronTrain(features, trainlabels, iterations):
                 correct = int(trainlabels[j])
             else:
                 correct = -1
-            #correct = int(trainlabels[j]) if int(trainlabels[j]) == 1 else -1
 
 
             
@@ -120,14 +119,11 @@ def perceptronTest(weight, bias, trainlabels, traindata):
     ans =  {"Correct" : correct, "Incorrect" : incorrect, "Accuracy" : correct/(correct+incorrect)}
     return ans
 
+
+
+
+
 def printToFile(train , test):
-    # f = open("output.txt", "w")
-    # for key, value in train.items():
-    #     f.write("Iteration: %s Correct: %s Incorrect: %s Accuracy: %s \n" % (key, value["Correct"], value["Incorrect"], value["Accuracy"]))
-    # f.write("\n")
-    # f.write("Test Results: \n")
-    # f.write("Correct: %s Incorrect: %s Accuracy: %s" % (test["Correct"], test["Incorrect"], test["Accuracy"]))
-    # f.close()
 
     f = open("output.txt", "w")
     for key, value in train.items():
