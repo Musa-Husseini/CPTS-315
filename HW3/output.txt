@@ -1,0 +1,41 @@
+Iteration0 4
+Iteration1 9
+Iteration2 10
+Iteration3 11
+Iteration4 9
+Iteration5 10
+Iteration6 12
+Iteration7 11
+Iteration8 12
+Iteration9 11
+Iteration10 11
+Iteration11 12
+Iteration12 12
+Iteration13 9
+Iteration14 8
+Iteration15 8
+Iteration16 8
+Iteration17 8
+Iteration18 9
+Iteration19 9
+
+Iteration0 0.0 0.03125
+Iteration1 0.0 0.03125
+Iteration2 0.0 0.03125
+Iteration3 0.0 0.03125
+Iteration4 0.0 0.03125
+Iteration5 0.0 0.03125
+Iteration6 0.0 0.03125
+Iteration7 0.0 0.03125
+Iteration8 0.0 0.03125
+Iteration9 0.0 0.03125
+Iteration10 0.0 0.03125
+Iteration11 0.0 0.03125
+Iteration12 0.0 0.03125
+Iteration13 0.0 0.03125
+Iteration14 0.0 0.03125
+Iteration15 0.0 0.03125
+Iteration16 0.0 0.03125
+Iteration17 0.0 0.03125
+Iteration18 -0.125 0.03125
+Iteration19 0.0 0.03125

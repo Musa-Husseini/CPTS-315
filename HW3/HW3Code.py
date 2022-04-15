@@ -7,12 +7,18 @@ def main():
     testlabels = read_data("testlabels.txt")
     testdata = read_data("testdata.txt")
     stoplist = read_data("stoplist.txt")
+    ocrtest = read_data("ocr_test.txt")
+    ocrtrain = read_data("ocr_train.txt")
+
+
+
     vocab = vocabulary(traindata, stoplist)
     trainfeature = features(traindata, vocab)
     testfeature = features(testdata, vocab)
-    weight, accuracy, sumi = classifier(trainfeature, trainlabels, 20)
-    print("Training Accuracy: ", accuracy)
+    weight, accuracy, bias = perceptronTrain(trainfeature, trainlabels, 20) 
+    testResults = perceptronTest(weight, bias, testlabels, testfeature)
 
+    printToFile(accuracy, testResults)
 
 def read_data(filename):
     with open(filename, "r") as text_file:
@@ -20,8 +26,7 @@ def read_data(filename):
     return data
 
 def vocabulary(traindata, stoplist):
-    vocab = sorted(list(set([word for line in traindata for word in line.split() if word not in stoplist])))
-    return vocab
+    return sorted(list(set([word for line in traindata for word in line.split() if word not in stoplist])))
 
 def features(data, vocab):
     feature = []
@@ -38,45 +43,103 @@ def features(data, vocab):
         feature.append(cur)
     return feature
 
-def classifier(features, trainlabels, iterations):
+#follow algorithm 5 from textbook 
+def perceptronTrain(features, trainlabels, iterations):
 
-    w = [0]  * len(features[0])
+    weight = [0]  * len(features[0])
     ans = {}
-    correctSum = 0
-    print(features[0][0])
+    bias = 0
+
     for i in range(iterations):
 
         correct = 0
         incorrect = 0
-        sumi = predictWeights(w, features[i]) + correctSum
-        if int(trainlabels[i]) == 1:
-            correct = 1
-        else:
-            correct = -1
+        featureList = list(range(len(features)))
 
-        for j in range(len(features)):
+        for j in featureList:
+
+            sumi = predictWeights(weight , features[j], bias) 
+
+            if int(trainlabels[j]) == 1:
+                correct = int(trainlabels[j])
+            else:
+                correct = -1
+
+
+            
             if  correct * sumi <= 0:
-                w = updateWeights(w, features[j], correct)
+                #print(weight)
+                weight = updateWeights(weight, features[j], correct)
+                #print(weight)
                 incorrect += 1
-                sumi += correct
+                bias += correct
             else:
                 correct += 1
         ans[i] = {"Correct" : correct, "Incorrect" : incorrect, "Accuracy" : correct/(correct+incorrect)}
-    return w, ans, sumi
+    return weight, ans, bias
+   
 
 
-def predictWeights(weight, feature):
+def predictWeights(weight, feature, bias):
     vsum = 0
     n = len(feature)
     for i in range(n):
         vsum+=feature[i]*weight[i]
+    vsum += bias
     return vsum
 
 def updateWeights(weight, feature, correct):
-    n = len(feature)
-    for i in range(n):
-        weight[i] += correct * feature[i]
-    return weight
+    weight2 =  [0] * len(weight)
+    for i in range(len(weight)):
+        weight2[i] = weight[i] + (correct * feature[i])
+    return weight2
+
+
+#follow algorithm 6 from textbook
+def perceptronTest(weight, bias, trainlabels, traindata):
+    traindatalist = list(range(len(traindata)))
+    correct = 0
+    incorrect = 0
+    i = 0
+    for row in traindatalist:
+        prediction = predictWeights(weight, traindata[i], bias)
+
+
+        if prediction <= 0:
+            prediction = 0
+        else:
+            prediction = 1
+        correct = int(trainlabels[row])
+
+        if prediction == correct:
+            correct += 1
+        else:
+            incorrect += 1
+        i += 1
+    ans =  {"Correct" : correct, "Incorrect" : incorrect, "Accuracy" : correct/(correct+incorrect)}
+    return ans
+
+
+
+
+
+def printToFile(train , test):
+
+    f = open("output.txt", "w")
+    for key, value in train.items():
+        f.write(f"Iteration{key} {value['Incorrect']}\n")
+    f.write("\n")
+
+    for key, value in train.items():
+        f.write(f"Iteration{key} {value['Accuracy']} {test['Accuracy']}\n")
+
+    f.close()
+
+
+
+
+
+
 
 if __name__ == '__main__':
     main()
