@@ -1,10 +1,6 @@
-import numpy as np
 import pandas as pd
 import itertools as it
 import time 
-import apyori as apriori
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 def main():
     start = time.time()
@@ -171,8 +167,6 @@ def quadConfidence(p1,p2, p3, p4):
 
         d = p3.get((key[0], key[1], key[2])) or p3.get((key[1], key[0], key[2])) or p3.get((key[2], key[0], key[1]))
         confidence[(key[0],key[1],key[2],key[3])] = p4[key] / d
-
-
 
     return dict(sorted(confidence.items(), key = lambda x:x[1],reverse=True))
 
