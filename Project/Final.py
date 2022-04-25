@@ -6,6 +6,7 @@ def main():
     start = time.time()
     support = 18
     df = pd.read_csv('Groceries_dataset.csv')
+    outfile = open("output.txt", "w")
     itemOccurence = occurences(df, support)
     customerItems = preprocess(df, support)
     p1Data = pass1(itemOccurence, customerItems, support)
@@ -20,6 +21,25 @@ def main():
     pairs = pairConfidence(itemOccurence, p1Data)
     triples = tripleConfidence(itemOccurence, p1Data, p2Data)
     quads = quadConfidence(itemOccurence, p1Data, p2Data, p3Data)
+
+    outfile.write("PAIRS FREQUENCY:\n")
+    printToFile(p1Data, outfile)
+    outfile.write("\n\n")
+    outfile.write("PAIRS CONFIDENCE:\n")
+    printToFile(pairs, outfile)
+    outfile.write("\n\n")
+    outfile.write("TRIPLES FREQUENCY:\n")
+    printToFile(p2Data, outfile)
+    outfile.write("\n\n")
+    outfile.write("TRIPLES CONFIDENCE:\n")
+    printToFile(triples, outfile)
+    outfile.write("\n\n")
+    outfile.write("QUADS FREQUENCY:\n")
+    printToFile(p3Data, outfile)
+    outfile.write("\n\n")
+    outfile.write("QUADS CONFIDENCE:\n")
+    printToFile(quads, outfile)
+    outfile.close()
     print("end")
     
 
@@ -169,6 +189,11 @@ def quadConfidence(p1,p2, p3, p4):
         confidence[(key[0],key[1],key[2],key[3])] = p4[key] / d
 
     return dict(sorted(confidence.items(), key = lambda x:x[1],reverse=True))
+
+
+def printToFile(data, outfile):
+    for key, value in data.items():
+        outfile.write(str(key) + ' : ' + str(value) + '\n')
 
 if __name__ == "__main__":
     main()
